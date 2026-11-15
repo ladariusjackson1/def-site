@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Owner Records | Double Eagle Financial</title><meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"><script>try{if(localStorage.getItem("def-theme")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}</script><script src="fx.js"></script></head><body>
+<div class="banner"><b>Classroom project.</b> All transactions and customers are simulated/fictional.</div>
+<header class="site"><div class="wrap hbar"><a class="logo" href="index.html">Double Eagle <span>Financial</span> <small>Owner Records</small></a><nav class="always" aria-label="Main"><a href="index.html" class="nav-cta">← Back to site</a></nav></div></header>
+<main id="main" class="records"><section><h2>Summary</h2><div class="kpis"><div>Transactions<b id="kN">0</b></div><div>Net service revenue (excl. tax &amp; fees)<b id="kRev">$0</b></div><div>Avg revenue / transaction<b id="kAvg">$0</b></div><div>Total billed (incl. fees)<b id="kTot">$0</b></div></div></section>
+<section><h2>Transactions</h2><p class="note">Records are stored in this browser's localStorage (key <code>def-transactions-v1</code>) and survive refresh or closing the tab. Export to CSV and open in Excel for analysis.</p>
+<button id="expT">Export transactions CSV</button> <button id="expL">Export line items CSV</button> <button id="seed">Load sample transactions (22)</button> <button class="sec" id="clr">Clear all records</button>
+<div style="overflow:auto"><table id="tbl"><thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Industry</th><th>Items</th><th>Pay</th><th class="n">Subtotal</th><th class="n">Discount</th><th class="n">Tax</th><th class="n">Fee</th><th class="n">Total</th></tr></thead><tbody></tbody></table></div></section></main>
+<footer>Double Eagle Financial LLC · Owner view · Simulated data</footer>
+<script src="catalog.js"></script><script src="seed.js"></script><script>
+function render(){const L=DEF.load();const rev=DEF.r2(L.reduce((s,t)=>s+t.netRevenue,0)),tot=DEF.r2(L.reduce((s,t)=>s+t.total,0));
+kN.textContent=L.length;kRev.textContent=DEF.money(rev);kAvg.textContent=DEF.money(L.length?rev/L.length:0);kTot.textContent=DEF.money(tot);
+tbl.querySelector('tbody').innerHTML=L.map(t=>`<tr><td>${t.id}</td><td>${t.date}</td><td>${t.customerId} ${t.customerName}</td><td>${t.industry}</td><td>${t.lines.map(l=>l.code+' ×'+l.qty).join(', ')}</td><td>${t.payment}</td><td class="n">${DEF.money(t.subtotal)}</td><td class="n">${DEF.money(t.discount)}</td><td class="n">${DEF.money(t.tax)}</td><td class="n">${DEF.money(t.fee)}</td><td class="n">${DEF.money(t.total)}</td></tr>`).join('')||'<tr><td colspan="11">No transactions yet.</td></tr>';}
+expT.onclick=()=>DEF.download('def_transactions.csv',DEF.txnCSV(DEF.load()));
+expL.onclick=()=>DEF.download('def_line_items.csv',DEF.linesCSV(DEF.load()));
+seed.onclick=()=>{const L=DEF.load();const ids=new Set(L.map(t=>t.id));const add=DEF.SEED.filter(t=>!ids.has(t.id));DEF.save(L.concat(add));render();};
+clr.onclick=()=>{if(confirm('Delete all saved transactions in this browser?')){DEF.save([]);render();}};render();
+</script></body></html>
